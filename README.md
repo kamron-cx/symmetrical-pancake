@@ -1,2 +1,1 @@
-# symmetrical-pancake
-bot uchun 
+insta saver
