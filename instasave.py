@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.utils import executor
 
 # Bot tokeningizni kiriting
-API_TOKEN = 'SIZNING_BOT_TOKENINGIZ'
+API_TOKEN = '8633260476:AAFlCH9VjAX5ftfd4emmxR89as661R_EccE'
 
 # Logging sozlamalari
 logging.basicConfig(level=logging.INFO)
