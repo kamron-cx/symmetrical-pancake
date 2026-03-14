@@ -1,76 +1,48 @@
 import os
-import re
 import instaloader
+import logging
 from aiogram import Bot, Dispatcher, types
-from aiogram.filters import Command
-from aiogram.types import FSInputFile
-import asyncio
+from aiogram.utils import executor
 
-# O'z tokeningni shu yerga yoz
-BOT_TOKEN = "7154872123:AAHxxxxxxxxxxxxxxxxxxxxxxxxxx"  # @BotFather dan olingan token
+# Bot tokeningizni kiriting
+API_TOKEN = 'SIZNING_BOT_TOKENINGIZ'
 
-bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher()
+# Logging sozlamalari
+logging.basicConfig(level=logging.INFO)
 
-@dp.message(Command("start"))
-async def start(message: types.Message):
-    await message.answer("Salom! Instagram havolasini yubor, men yuklab beraman.")
+bot = Bot(token=API_TOKEN)
+dp = Dispatcher(bot)
+loader = instaloader.Instaloader()
 
-@dp.message()
-async def download(message: types.Message):
-    url = message.text
-    
-    # Instagram havolasi ekanini tekshirish
-    if "instagram.com" not in url:
-        await message.answer("❌ Instagram havolasi yuboring!")
-        return
-    
-    await message.answer("⏳ Yuklanmoqda...")
-    
-    try:
-        # Shortcode ajratib olish
-        shortcode = re.search(r'/p/([^/]+)', url)
-        if not shortcode:
-            shortcode = re.search(r'/reel/([^/]+)', url)
-        
-        if not shortcode:
-            await message.answer("❌ Noto'g'ri havola!")
-            return
-        
-        code = shortcode.group(1)
-        
-        # Instagram dan yuklab olish
-        loader = instaloader.Instaloader()
-        post = instaloader.Post.from_shortcode(loader.context, code)
-        
-        # Papka yaratish
-        os.makedirs("downloads", exist_ok=True)
-        
-        if post.is_video:
-            # Video yuklash
-            file_path = f"downloads/{code}.mp4"
-            loader.download_pic(url=post.video_url, filename=file_path, mtime=post.date_utc)
+@dp.message_handler(commands=['start', 'help'])
+async def send_welcome(message: types.Message):
+    await message.reply("Salom! Menga Instagram post yoki video havolasini yuboring, men uni yuklab beraman.")
+
+@dp.message_handler()
+async def download_instagram(message: types.Message):
+    link = message.text
+    if "instagram.com" in link:
+        temp_msg = await message.answer("Yuklanmoqda... 📥")
+        try:
+            # Havoladan qisqa kodni olish
+            shortcode = link.split("/")[-2] if link.endswith("/") else link.split("/")[-1]
+            if "?" in shortcode:
+                shortcode = shortcode.split("?")[0]
+
+            post = instaloader.Post.from_shortcode(loader.context, shortcode)
+
+            if post.is_video:
+                await message.answer_video(post.video_url, caption="Muvaffaqiyatli yuklandi! ✅")
+            else:
+                await message.answer_photo(post.url, caption="Muvaffaqiyatli yuklandi! ✅")
             
-            # Bot ga yuborish
-            await message.answer_video(FSInputFile(file_path))
-        else:
-            # Rasm yuklash
-            file_path = f"downloads/{code}.jpg"
-            loader.download_pic(url=post.url, filename=file_path, mtime=post.date_utc)
-            
-            # Bot ga yuborish
-            await message.answer_photo(FSInputFile(file_path))
-        
-        # Faylni o'chirish
-        os.remove(file_path)
-        await message.answer("✅ Tayyor!")
-        
-    except Exception as e:
-        await message.answer(f"❌ Xato: {str(e)}")
+            await temp_msg.delete()
+        except Exception as e:
+            await message.answer(f"Xatolik yuz berdi: {e}")
+            await temp_msg.delete()
+    else:
+        await message.answer("Iltimos, faqat Instagram havolasini yuboring.")
 
-async def main():
-    print("Bot ishga tushdi...")
-    await dp.start_polling(bot)
+if __name__ == '__main__':
+    executor.start_polling(dp, skip_updates=True)
 
-if __name__ == "__main__":
-    asyncio.run(main())
