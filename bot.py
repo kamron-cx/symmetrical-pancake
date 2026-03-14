@@ -6,11 +6,11 @@ from aiogram.utils import executor
 
 # --- SOZLAMALAR ---
 # 1. Telegram Bot Tokeningizni bu yerga yozing (@BotFather dan olinadi)
-API_TOKEN = 'SIZNING_BOT_TOKENINGIZ'
+API_TOKEN '8633260476:AAFlCH9VjAX5ftfd4emmxR89as661R_EccE'
 
 # 2. Instagram login ma'lumotlaringiz (Bot ishlashi uchun shart)
-INSTA_USER = 'SIZNING_INSTAGRAM_LOGININGIZ'
-INSTA_PASS = 'SIZNING_INSTAGRAM_PAROLINGIZ'
+INSTA_USER = 'instauchuntgbot'
+INSTA_PASS = '@Te140993lyt'
 
 # Logging (Xatolarni kuzatish uchun)
 logging.basicConfig(level=logging.INFO)
