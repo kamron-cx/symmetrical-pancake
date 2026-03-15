@@ -5,7 +5,7 @@ from aiogram.utils import executor
 
 # Sozlamalar
 API_TOKEN = '8633260476:AAFlCH9VjAX5ftfd4emmxR89as661R_EccE'
-INSTA_USER = 'instauchuntgbot.py' # Sessiya fayli nomi shu bilan bog'liq bo'ladi
+INSTA_USER = 'telesaveinstabot' # Sessiya fayli nomi shu bilan bog'liq bo'ladi
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
