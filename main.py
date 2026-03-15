@@ -4,8 +4,8 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.utils import executor
 
 # Sozlamalar
-API_TOKEN = 'BOT_TOKENINGIZ'
-INSTA_USER = 'sizning_instagram_loginingiz' # Sessiya fayli nomi shu bilan bog'liq bo'ladi
+API_TOKEN = '8633260476:AAFlCH9VjAX5ftfd4emmxR89as661R_EccE'
+INSTA_USER = 'instauchuntgbot' # Sessiya fayli nomi shu bilan bog'liq bo'ladi
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=API_TOKEN)
