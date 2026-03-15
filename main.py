@@ -4,7 +4,7 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.utils import executor
 
 # --- SOZLAMALAR ---
-API_TOKEN = '8633260476:AAFlCH9VjAX5ftfd4emmxR89as661R_EccE' 
+API_TOKEN = '8633260476:AAGO0oZEtL4iFeFenPmlqIpA4zdZiRkPqak' 
 SESSION_FILE = 'telesaveinstabot' 
 
 logging.basicConfig(level=logging.INFO)
