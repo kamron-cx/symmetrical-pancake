@@ -1,5 +1,6 @@
 import logging
 import instaloader
+import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.utils import executor
 
@@ -15,14 +16,14 @@ L = instaloader.Instaloader()
 # --- SESSİYANI YUKLASH ---
 try:
     L.load_session_from_file('telesaveinstabot', filename=SESSION_FILE)
-    logging.info("Sessiya muvaffaqiyatli yuklandi.")
+    logging.info("Sessiya yuklandi.")
 except Exception as e:
     logging.error(f"Sessiya xatosi: {e}")
 
-# --- ASOSIY FUNKSIYA ---
+# --- HANDLERLAR ---
 @dp.message_handler(commands=['start'])
 async def start_cmd(message: types.Message):
-    await message.answer("Assalomu alaykum! Menga Instagram havolasini yuboring, barcha rasm va videolarni yuklab beraman.")
+    await message.answer("Assalomu alaykum! Instagram havolasini yuboring.")
 
 @dp.message_handler()
 async def download_handler(message: types.Message):
@@ -33,35 +34,31 @@ async def download_handler(message: types.Message):
         try:
             shortcode = url.split("/")[-2]
             post = instaloader.Post.from_shortcode(L.context, shortcode)
-            
             media = types.MediaGroup()
             
-            # 1. Agar bu karusel bo'lsa (bir nechta rasm/video)
+            # Karusel, Video yoki Rasmni tekshirish
             if post.typename == 'GraphSidecar':
-                for node in post.get_sidecar_nodes():
+                nodes = list(post.get_sidecar_nodes())[:10] # Maksimum 10 ta
+                for node in nodes:
                     if node.is_video:
                         media.attach_video(node.video_url)
                     else:
                         media.attach_photo(node.display_url)
-            
-            # 2. Agar bitta video bo'lsa
             elif post.is_video:
                 media.attach_video(post.video_url)
-            
-            # 3. Agar bitta rasm bo'lsa
             else:
                 media.attach_photo(post.display_url)
 
             # Media guruhni yuborish
-            await message.answer_media_group(media)
+            await bot.send_media_group(chat_id=message.chat.id, media=media)
             await wait_msg.delete()
 
         except Exception as e:
             logging.error(f"Xatolik: {e}")
-            await wait_msg.edit("Xatolik yuz berdi. Havola to'g'riligini yoki profil ochiqligini tekshiring.")
+            await wait_msg.edit("Xatolik: Media yuklanmadi. Havola xato yoki profil yopiq bo'lishi mumkin.")
     else:
         await message.answer("Iltimos, Instagram havolasini yuboring.")
 
 if __name__ == '__main__':
+    # Ikkita nusxa bo'lib ishlamasligi uchun start_polling ishlatamiz
     executor.start_polling(dp, skip_updates=True)
-
