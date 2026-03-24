@@ -29,7 +29,7 @@ async def start_cmd(message: types.Message):
 async def download_handler(message: types.Message):
     if "instagram.com" in message.text:
         url = message.text.split('?')[0]
-        wait_msg = await message.answer("Media fayllar tayyorlanmoqda... ⏳")
+        wait_msg = await message.answer("Media fayllar yuklanmoqda... ⏳")
         
         try:
             shortcode = url.split("/")[-2]
